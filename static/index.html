@@ -1,0 +1,175 @@
+<!--
+// Muaz Khan     - www.MuazKhan.com
+// MIT License   - www.WebRTC-Experiment.com/licence
+// Experiments   - github.com/muaz-khan/WebRTC-Experiment
+-->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <script src="https://www.webrtc-experiment.com/RecordRTC.js"> </script>
+    </head>
+    <body>
+       <h1> Hello, World!</h1>
+       <section class="experiment">
+        <h2 class="header">
+          Record Audio ( <a href="http://recordrtc.org/" title="API Documentation">RecordRTC.org</a> )
+        </h2>
+
+        <div class="inner" style="height: 5em;">
+          <audio id="audio" autoplay="autoplay" controls="controls"></audio>
+          <button id="start-recording">Record</button>
+          <button id="stop-recording" disabled="disabled">Stop</button>
+          <h2 id="audio-url-preview"></h2>
+        </div>
+
+
+        <script>
+            // fetching DOM references
+            var startRecording = document.querySelector('#start-recording');
+            var stopRecording  = document.querySelector('#stop-recording');
+            var audioElement = document.querySelector('#audio');
+        </script>
+
+        <script>
+            // global variables
+            var currentBrowser = !!navigator.mozGetUserMedia ? 'gecko' : 'chromium';
+
+            var fileName;
+            var audioRecorder;
+        </script>
+
+        <script>
+            // reusable helpers
+
+            // this function submits both audio/video or single recorded blob to nodejs server
+            function postFiles(audio) {
+                // getting unique identifier for the file name
+                fileName = generateRandomString();
+
+                // this object is used to allow submitting multiple recorded blobs
+                var files = { };
+
+                // recorded audio blob
+                files.audio = {
+                    name: fileName + '.' + audio.blob.type.split('/')[1],
+                    type: audio.blob.type,
+                    contents: audio.dataURL
+                };
+
+                files.uploadOnlyAudio = true;
+
+                audioElement.src = '';
+
+                xhr('/upload', JSON.stringify(files), function(_fileName) {
+                    var href = location.href.substr(0, location.href.lastIndexOf('/') + 1);
+                    audioElement.src = href + 'uploads/' + _fileName;
+                    audioElement.play();
+                    audioElement.muted = false;
+                    audioElement.controls = true;
+
+                    var h2 = document.createElement('h2');
+                    h2.innerHTML = '<a href="' + audioElement.src + '">' + audioElement.src + '</a>';
+                    document.body.appendChild(h2);
+                });
+
+                if(mediaStream) mediaStream.stop();
+            }
+
+            // XHR2/FormData
+            function xhr(url, data, callback) {
+                var request = new XMLHttpRequest();
+                request.onreadystatechange = function() {
+                    if (request.readyState == 4 && request.status == 200) {
+                        callback(request.responseText);
+                    }
+                };
+
+                request.open('POST', url);
+                request.send(data);
+            }
+
+            // generating random string
+            function generateRandomString() {
+                if (window.crypto) {
+                    var a = window.crypto.getRandomValues(new Uint32Array(3)),
+                        token = '';
+                    for (var i = 0, l = a.length; i < l; i++) token += a[i].toString(36);
+                    return token;
+                } else {
+                    return (Math.random() * new Date().getTime()).toString(36).replace( /\./g , '');
+                }
+            }
+
+            // when stopRecording is clicked
+            function onStopRecording() {
+                audioRecorder.getDataURL(function(audioDataURL) {
+                    var audio = {
+                        blob: audioRecorder.getBlob(),
+                        dataURL: audioDataURL
+                    };
+
+                    postFiles(audio);
+                });
+            }
+        </script>
+
+        <script>
+            var mediaStream = null;
+            // reusable getUserMedia
+            function captureUserMedia(success_callback) {
+                var session = {
+                    audio: true,
+                    video: false
+                };
+
+                navigator.getUserMedia(session, success_callback, function(error) {
+                    alert( JSON.stringify(error) );
+                });
+            }
+        </script>
+
+        <script>
+            // UI events handling
+            startRecording.onclick = function() {
+                startRecording.disabled = true;
+
+                captureUserMedia(function(stream) {
+                    mediaStream = stream;
+
+                    audioElement.src = window.URL.createObjectURL(stream);
+                    audioElement.play();
+                    audioElement.muted = true;
+                    audioElement.controls = false;
+
+                    // it is second parameter of the RecordRTC
+                    var audioConfig = {};
+
+                    audioRecorder = RecordRTC(stream, audioConfig);
+
+                    audioRecorder.startRecording();
+
+                    // enable stop-recording button
+                    stopRecording.disabled = false;
+                });
+            };
+
+
+            stopRecording.onclick = function() {
+                startRecording.disabled = false;
+                stopRecording.disabled = true;
+
+                audioRecorder.stopRecording(onStopRecording);
+
+            };
+        </script>
+
+        <script>
+            window.onbeforeunload = function() {
+                startRecording.disabled = false;
+            };
+        </script>
+    </body>
+</html>
