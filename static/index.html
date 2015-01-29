@@ -27,38 +27,53 @@
           <input type="button" id="start_button" value="Start">
           <input type="button" id="stop_button" value="Stop">
         </p>
-<style>
-#canvas {
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-  background-color: black;
-}
+        <style>
+        #canvas {
+          margin-left: auto;
+          margin-right: auto;
+          display: block;
+          background-color: black;
+        }
 
-#controls {
-  text-align: center;
-}
+        #controls {
+          text-align: center;
+        }
 
-#start_button, #stop_button {
-  font-size: 16pt;
-}
-</style>
+        #start_button, #stop_button {
+          font-size: 16pt;
+        }
+        </style>
         <script>
             // fetching DOM references
             var startRecording = document.querySelector('#start-recording');
             var stopRecording  = document.querySelector('#stop-recording');
             var audioElement = document.querySelector('#audio');
-        </script>
 
-        <script>
             // global variables
             var currentBrowser = !!navigator.mozGetUserMedia ? 'gecko' : 'chromium';
 
             var fileName;
             var audioRecorder;
-        </script>
 
-        <script>
+            // Global Variables for Audio
+            var audioContext;
+            var audioBuffer;
+            var sourceNode;
+            var analyserNode;
+            var javascriptNode;
+            var audioData = null;
+            var audioPlaying = false;
+            var sampleSize = 1024; // number of samples to collect before analyzing FFT
+            var fftSize = 1024; // must be power of two
+            var frequencyArray; // array to hold frequency data
+            var audioUrl;
+
+            // Global Variables for Drawing
+            var column = 0;
+            var canvasWidth = 800;
+            var canvasHeight = 256;
+            var ctx;
+
             // reusable helpers
 
             // this function submits both audio/video or single recorded blob to nodejs server
@@ -82,7 +97,10 @@
 
                 xhr('/upload', JSON.stringify(files), function(_fileName) {
                     var href = location.href.substr(0, location.href.lastIndexOf('/') + 1);
-                    audioElement.src = href + 'uploads/' + _fileName;
+                    var currUrl = href + 'uploads/' + _fileName;
+                    console.log(currUrl);
+                    audioUrl = currUrl;
+                    audioElement.src = currUrl;
                     audioElement.play();
                     audioElement.muted = false;
                     audioElement.controls = true;
@@ -131,9 +149,7 @@
                     postFiles(audio);
                 });
             }
-        </script>
 
-        <script>
             var mediaStream = null;
             // reusable getUserMedia
             function captureUserMedia(success_callback) {
@@ -146,9 +162,7 @@
                     alert( JSON.stringify(error) );
                 });
             }
-        </script>
 
-        <script>
             // UI events handling
             startRecording.onclick = function() {
                 startRecording.disabled = true;
@@ -173,7 +187,6 @@
                 });
             };
 
-
             stopRecording.onclick = function() {
                 startRecording.disabled = false;
                 stopRecording.disabled = true;
@@ -181,15 +194,11 @@
                 audioRecorder.stopRecording(onStopRecording);
 
             };
-        </script>
 
-        <script>
             window.onbeforeunload = function() {
                 startRecording.disabled = false;
             };
-        </script>
 
-        <script>
 // Hacks to deal with different function names in different browsers
   window.requestAnimFrame = (function() {
     return window.requestAnimationFrame ||
@@ -204,24 +213,6 @@
     return window.webkitAudioContext || window.AudioContext || window.mozAudioContext;
   })();
 
-  // Global Variables for Audio
-  var audioContext;
-  var audioBuffer;
-  var sourceNode;
-  var analyserNode;
-  var javascriptNode;
-  var audioData = null;
-  var audioPlaying = false;
-  var sampleSize = 1024; // number of samples to collect before analyzing FFT
-  var fftSize = 1024; // must be power of two
-  var frequencyArray; // array to hold frequency data
-  var audioUrl = "/uploads/test.wav";
-
-  // Global Variables for Drawing
-  var column = 0;
-  var canvasWidth = 800;
-  var canvasHeight = 256;
-  var ctx;
 
   // Uses the chroma.js library by Gregor Aisch to create a color gradient
   // download from https://github.com/gka/chroma.js
