@@ -27,8 +27,10 @@ node_modules
 # Users Environment Variables
 .lock-wscript
 
-# vim swp files
+# Temporary files from various editors
 *.swp
+*.swo
+*~
 
 # audio files
 *.wav
