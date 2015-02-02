@@ -3,7 +3,6 @@ var config = require('./config'),
     url = require('url');
 
 function start(route, handle) {
-  console.log('start function called from server.js');
 
     function onRequest(request, response) {
 
@@ -22,7 +21,6 @@ function start(route, handle) {
     }
 
     http.createServer(onRequest).listen(config.port);
-    console.log('htty sperver created');
 }
 
 exports.start = start;

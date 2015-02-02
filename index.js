@@ -8,6 +8,4 @@ handle["/home"] = handlers.home;
 handle["/upload"] = handlers.upload;
 handle._static = handlers.serveStatic;
 
-console.log('going to start server');
 server.start(router.route, handle);
-console.log('startetd server');

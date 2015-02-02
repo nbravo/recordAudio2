@@ -4,8 +4,6 @@ function respondWithHTTPCode(response, code) {
 }
 
 function route(handle, pathname, response, postData) {
-  console.log('route function called');
-
     var extension = pathname.split('.').pop();
 
     var staticFiles = {
@@ -19,7 +17,6 @@ function route(handle, pathname, response, postData) {
     };
 
     if ('function' === typeof handle[pathname]) {
-    console.log('detected handler');
         handle[pathname](response, postData);
     } else if (staticFiles[extension]) {
         handle._static(response, pathname, postData);

@@ -5,7 +5,6 @@ var config = require('./config'),
 
 function home(response) {
 
-    console.log('home fucntnion executed');
     response.writeHead(200, {
         'Content-Type': 'text/html'
     });
@@ -49,7 +48,6 @@ function _upload(response, file) {
 }
 
 function serveStatic(response, pathname) {
-   console.log('serving static');
     var extension = pathname.split('.').pop(),
         extensionTypes = {
             'js': 'application/javascript',
