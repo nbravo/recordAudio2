@@ -4,6 +4,7 @@ var config = require('./config'),
     exec = require('child_process').exec;
 
 function home(response) {
+
     console.log('home fucntnion executed');
     response.writeHead(200, {
         'Content-Type': 'text/html'
