@@ -9,10 +9,26 @@
     </head>
     <body>
        <h1> Spectrogram Demo</h1>
+
        <section class="experiment">
+        <div>
+          <h2>1) Set STFT Parameters</h2>
+           FFT Size:<br>
+           <input id="fftSize" type="text">
+           <br>
+           Sample Size:<br>
+           <input id="sampleSize" type="text">
+           <br>
+           Smoothing Time Constant:<br>
+           <input id="smoothingTimeConstant" type="text">
+           <br><br>
+           <input id="parametersButton" type="button" value="Set Parameters">
+        </div>
+
         <h2 class="header">
-          Record Audio
+          2) Record Audio
         </h2>
+
 
         <div class="inner" style="height: 5em;">
           <audio id="audio" controls="controls"></audio>
@@ -43,10 +59,23 @@
         }
         </style>
         <script>
+            var sampleSize = 1024; // number of samples to collect before analyzing FFT
+            var fftSize = 1024; // must be power of two
+            var smoothingTimeConstant = 0.0;
+
             // fetching DOM references
             var startRecording = document.querySelector('#start-recording');
             var stopRecording  = document.querySelector('#stop-recording');
             var audioElement = document.querySelector('#audio');
+            var sampleSizeElement = $('#sampleSize');
+            var smoothingTimeConstantElement = $('#smoothingTimeConstant');
+            var fftSizeElement = $('#fftSize');
+            var parametersButtonElement = $('#parametersButton');
+
+            // set parameter defaults
+            sampleSizeElement.val(sampleSize);
+            fftSizeElement.val(fftSize);
+            smoothingTimeConstantElement.val(smoothingTimeConstant);
 
             // global variables
             var currentBrowser = !!navigator.mozGetUserMedia ? 'gecko' : 'chromium';
@@ -62,8 +91,6 @@
             var javascriptNode;
             var audioData = null;
             var audioPlaying = false;
-            var sampleSize = 1024; // number of samples to collect before analyzing FFT
-            var fftSize = 1024; // must be power of two
             var frequencyArray; // array to hold frequency data
             var audioUrl;
 
@@ -205,6 +232,29 @@
 
             };
 
+            parametersButton.onclick = function() {
+              if (!isNaN(parseInt(fftSizeElement.val()))) {
+                console.log(parseInt(fftSizeElement.val()));
+                fftSize = parseInt(fftSizeElement.val());
+              } else {
+                console.log(fftSize);
+                fftSizeElement.val(fftSize);
+              }
+
+
+              if (!isNaN(parseInt(sampleSizeElement.val()))) {
+                sampleSize = parseInt(sampleSizeElement.val());
+              } else {
+                sampleSizeElement.val(sampleSize);
+              }
+
+              if (!isNaN(parseFloat(smoothingTimeConstantElement.val()))) {
+                smoothingTimeConstant = parseFloat(smoothingTimeConstantElement.val());
+              } else {
+                smoothingTimeConstantElement.val(smoothingTimeConstant);
+              }
+            };
+
             window.onbeforeunload = function() {
                 startRecording.disabled = false;
             };
@@ -252,8 +302,9 @@
               function setupAudioNodes() {
                 sourceNode = audioContext.createBufferSource();
                 analyserNode = audioContext.createAnalyser();
-                analyserNode.smoothingTimeConstant = 0.0;
+                analyserNode.smoothingTimeConstant = smoothingTimeConstant;
                 analyserNode.fftSize = fftSize;
+                console.log(fftSize);
                 javascriptNode = audioContext.createScriptProcessor(sampleSize, 1, 1);
 
                 // Create the array for the data values

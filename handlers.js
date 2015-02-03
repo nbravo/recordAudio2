@@ -24,8 +24,6 @@ function upload(response, postData) {
     response.end(files.audio.name);
 }
 
-// this function merges wav/webm files
-
 function _upload(response, file) {
     var fileRootName = file.name.split('.').shift(),
         fileExtension = file.name.split('.').pop(),
