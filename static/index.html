@@ -8,36 +8,40 @@
         <script src="chroma.js"></script>
     </head>
     <body>
-       <h1> Spectrogram Demo</h1>
+      <h1> Spectrogram Demo</h1>
 
-       <section class="experiment">
-        <div>
-          <h2>1) Set STFT Parameters</h2>
-           FFT Size:<br>
-           <input id="fftSize" type="text">
-           <br>
-           Sample Size:<br>
-           <input id="sampleSize" type="text">
-           <br>
-           Smoothing Time Constant:<br>
-           <input id="smoothingTimeConstant" type="text">
-           <br><br>
-           <input id="parametersButton" type="button" value="Set Parameters">
+      <section class="experiment">
+        <div id="container_div">
+          <div class="left_div">
+            <h2>Step 1 (Optional):<br>Set STFT Parameters</h2>
+            FFT Size:<br>
+            <input id="fftSize" type="text">
+            <br>
+            Sample Size:<br>
+            <input id="sampleSize" type="text">
+            <br>
+            Smoothing Time Constant:<br>
+            <input id="smoothingTimeConstant" type="text">
+            <br><br>
+            <input id="parametersButton" type="button" value="Set Parameters">
+          </div>
+
+          <div class="right_div">
+            <h2 class="header">
+              Step 2: Record Audio
+            </h2>
+            <audio id="audio" controls="controls"></audio>
+            <button id="start-recording">Record</button>
+            <button id="stop-recording" disabled="disabled">Stop</button>
+            <h2 id="audio-url-preview"></h2>
+          </div>
         </div>
+      </section>
 
-        <h2 class="header">
-          2) Record Audio
-        </h2>
-
-
-        <div class="inner" style="height: 5em;">
-          <audio id="audio" controls="controls"></audio>
-          <button id="start-recording">Record</button>
-          <button id="stop-recording" disabled="disabled">Stop</button>
-          <h2 id="audio-url-preview"></h2>
-        </div>
-
+      <div>
+        <h3>Step 3: Examine Spectrogram</h3>
         <canvas id="canvas" width="800" height="256"></canvas>
+      </div>
 
         <p id="controls">
           <input type="button" id="stop_button" value="Stop">
@@ -52,6 +56,24 @@
 
         #controls {
           text-align: center;
+        }
+
+        #container_div {
+            width: 100%;
+            border: 1px solid red;
+            margin-right: 10px;
+            float: left;
+        }
+
+        .right_div {
+          float: right;
+          margin-right: 80px;
+        }
+
+        .left_div {
+            float: left;
+            margin-left: 80px;
+            margin-right: 5px;
         }
 
         #start_button, #stop_button {
