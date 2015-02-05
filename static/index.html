@@ -15,15 +15,32 @@
           <div class="left_div">
             <h2>Step 1 (Optional):<br>Set STFT Parameters</h2>
             FFT Size:<br>
-            <input id="fftSize" type="text">
+            <select id="fftSizeDropDown">
+              <option>32</option>
+              <option>64</option>
+              <option>128</option>
+              <option>256</option>
+              <option>512</option>
+              <option>1024</option>
+              <option>2048</option>
+            </select>
             <br>
             Sample Size:<br>
-            <input id="sampleSize" type="text">
+            <select id="sampleSizeDropDown">
+              <option>256</option>
+              <option>512</option>
+              <option>1024</option>
+              <option>2048</option>
+              <option>4096</option>
+              <option>8192</option>
+              <option>16384</option>
+            </select>
             <br>
             Smoothing Time Constant:<br>
             <input id="smoothingTimeConstant" type="text">
             <br><br>
             <input id="parametersButton" type="button" value="Set Parameters">
+
           </div>
 
           <div class="right_div">
@@ -89,9 +106,9 @@
             var startRecording = document.querySelector('#start-recording');
             var stopRecording  = document.querySelector('#stop-recording');
             var audioElement = document.querySelector('#audio');
-            var sampleSizeElement = $('#sampleSize');
+            var sampleSizeElement = $('#sampleSizeDropDown');
             var smoothingTimeConstantElement = $('#smoothingTimeConstant');
-            var fftSizeElement = $('#fftSize');
+            var fftSizeElement = $('#fftSizeDropDown');
             var parametersButtonElement = $('#parametersButton');
 
             // set parameter defaults
@@ -255,20 +272,8 @@
             };
 
             parametersButton.onclick = function() {
-              if (!isNaN(parseInt(fftSizeElement.val()))) {
-                console.log(parseInt(fftSizeElement.val()));
                 fftSize = parseInt(fftSizeElement.val());
-              } else {
-                console.log(fftSize);
-                fftSizeElement.val(fftSize);
-              }
-
-
-              if (!isNaN(parseInt(sampleSizeElement.val()))) {
                 sampleSize = parseInt(sampleSizeElement.val());
-              } else {
-                sampleSizeElement.val(sampleSize);
-              }
 
               if (!isNaN(parseFloat(smoothingTimeConstantElement.val()))) {
                 smoothingTimeConstant = parseFloat(smoothingTimeConstantElement.val());
