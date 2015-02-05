@@ -15,6 +15,7 @@
           <div class="left_div">
             <h2>Step 1 (Optional):<br>Set STFT Parameters</h2>
             FFT Size:<br>
+            The size of the FFT used for frequency-domain analysis.<br>
             <select id="fftSizeDropDown">
               <option>32</option>
               <option>64</option>
@@ -25,7 +26,10 @@
               <option>2048</option>
             </select>
             <br>
-            Sample Size:<br>
+            <br>
+            <br>
+            Buffer Size:<br>
+            Determines the buffer size in units of sample-frame.<br>
             <select id="sampleSizeDropDown">
               <option>256</option>
               <option>512</option>
@@ -36,7 +40,10 @@
               <option>16384</option>
             </select>
             <br>
+            <br>
+            <br>
             Smoothing Time Constant:<br>
+            A value from 0 -> 1 where 0 represents no time averaging<br> with the last analysis frame.<br>
             <input id="smoothingTimeConstant" type="text">
             <br><br>
             <input id="parametersButton" type="button" value="Set Parameters">
